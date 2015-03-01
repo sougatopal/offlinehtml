@@ -1,0 +1,15 @@
+{
+  "name": "offline_access",
+  "version": "0.0.0",
+  "description": "offline acess",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "sougatopal",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.12.0",
+    "express": "^4.11.2"
+  }
+}

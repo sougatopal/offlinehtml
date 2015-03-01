@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html manifest="cache.manifest">
+	<head>
+		<!--<script type="text/javascript" src= "handlebars-v3.0.0.js"></script>-->
+		<style type="text/css">
+			.container {
+						width: 50%;
+						margin: auto;
+						}
+			input{
+				margin: 10px 0px;
+			}
+		</style>
+	</head>	
+	<body>
+		<div class="container">
+		<h1>
+			Deepak Courier
+		</h1>
+		<label for ="awr">AWR NO</label><br/> <input id ="awr"/><br/>
+		<label for ="delDate">Deliver Date</label> <br/><input id ="delDate"/><br/>
+		<label for ="delStatus">Delivery Satus</label> <br/><input id ="delStatus"/><br/>
+		<label for ="delReason">Reson for Delay</label> <br/><input id ="delReason"/><br/>
+		<label for ="custSign">CustomerSignature</label> <br/><input id ="custSign"/><br/>
+		<button id ="sumbit">Submit</button>
+		<button id ="fetch">Submit to server</button>
+		</div>
+<script>
+var App ={};
+//App.courierJson=[];
+App.button_submit = document.getElementById("sumbit");
+App.button_fetch = document.getElementById("fetch");
+
+
+App.addData = function(){
+
+			var awr = document.getElementById("awr").value;
+			var delDate = document.getElementById("delDate").value;
+			var delStatus = document.getElementById("delStatus").value;
+			var delReason = document.getElementById("delReason").value;
+			var custSign = document.getElementById("custSign").value;
+			var json = {"awr":awr,"delDate":delDate,"delStatus":delStatus,"delReason":delReason,"custSign":custSign}
+			App.addJson(json);
+			Array.prototype.forEach.call(document.getElementsByTagName("input"),function(i){i.value=""});
+		};
+
+App.addJson = function(json){
+console.log("local");
+	if (window.localStorage){
+		console.log("local storage supported");
+		if (!window.localStorage.courierJson)
+		{
+			window.localStorage.setItem("courierJson",JSON.stringify([]));
+		}
+		var cJson = JSON.parse(localStorage["courierJson"]);
+		cJson.push(json);
+		localStorage["courierJson"] = JSON.stringify(cJson);
+		//Array.prototype.push.call(window.localStorage.courierJson,json);
+		//window.localStorage.courierJson.push(json);
+	}
+	return;
+
+};
+
+App.fireEvent= function(name,data){
+	var e=document.createEvent("Event");
+	e.initEvent(name,true,true);
+	e.data = data;
+	window.dispatchEvent(e);
+
+};
+
+App.fetch = function(){
+
+
+	if (window.localStorage.courierJson)
+		{
+			var data = JSON.parse(localStorage["courierJson"]);
+			console.log("before send data",JSON.stringify(data));
+		}
+	var xhr = new XMLHttpRequest();
+
+	xhr.onreadystatechange = function(){
+
+		if (xhr.readyState == 4)
+		{
+			if(xhr.status == 200)
+			{
+				console.log(xhr.responseText);
+				if (window.localStorage.courierJson)
+				{
+					window.localStorage.clear();
+				}
+			}
+		}
+	}
+	xhr.open('POST','http://localhost:3000/api');
+	xhr.setRequestHeader('Content-Type', 'application/json');
+	xhr.send(JSON.stringify(data));
+
+}
+
+App.button_submit.addEventListener("click",App.addData,false);
+
+window.addEventListener("online", function(e) {
+  console.log("online");
+}, false);
+
+App.button_fetch.addEventListener("click",App.fetch,false)
+
+
+</script>
+
+	</body>
+</html>
